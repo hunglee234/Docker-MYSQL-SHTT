@@ -1,0 +1,246 @@
+docker build .
+docker images
+docker run -p 3000:3000 0a476a20c375
+
+Mở 1 tab terminal nữa
+docker ps
+docker stop eager_chandrasekhar ( Names có trong ps)
+
+Docker - Giúp đóng gói, triển khai và chạy ứng dụng trong các container
+-- Tạo môi trường nhất quán giữa máy dev và production
+-- Dễ scale và triển khai trên nhiều nền tảng
+
+Docker Engine : nền tảng chạy container
+-- Chạy container & quản lý tài nguyên
+-- Xây dụng Docker Image ( docker build )
+-- pull hoặc push image lên Docker Hub
+-- Cung cấp CLI docker để thao tác với container
+
+Image là một bản mẫu chỉ đọc chứa tất cả các thành phần cần thiết để chạy 1 ứng dụng 
+( Hệ điều hành, mã nguồn, các thư viện dependencies, cấu hình môi trường )
+
+👉 Docker Desktop là ứng dụng giúp dễ dàng chạy Docker trên Windows/macOS, có sẵn Docker Engine.
+
+📌 Tác dụng:
+✔ Cài đặt Docker nhanh chóng (không cần cấu hình phức tạp).
+✔ Cung cấp giao diện GUI để quản lý container dễ dàng.
+✔ Hỗ trợ WSL 2 trên Windows giúp chạy Docker hiệu quả hơn.
+✔ Tích hợp Kubernetes (có thể bật lên để test).
+
+📌 Mối quan hệ:
+✔ Bao gồm Docker Engine nên có thể chạy container ngay.
+✔ Hỗ trợ Docker Compose để chạy nhiều container.
+✔ Có thể kết nối Docker Hub để tải image dễ dàng.
+
+🌍 3. Docker Hub (Kho lưu trữ Docker Image)
+👉 Docker Hub là nơi lưu trữ Docker Image, giống như "GitHub dành cho container".
+
+📌 Tác dụng:
+✔ Chia sẻ Docker Image với cộng đồng.
+✔ Tải Docker Image về (docker pull).
+✔ Đẩy image lên (docker push).
+✔ Có nhiều image chính thức (Nginx, MySQL, Node.js...).
+
+📌 Mối quan hệ:
+✔ Docker Engine kéo/push image từ Docker Hub.
+✔ Docker Desktop giúp dễ dàng kết nối với Docker Hub.
+✔ Kubernetes có thể lấy image từ Docker Hub để triển khai container.
+
+⚡ 4. Docker Compose (Quản lý nhiều container cùng lúc)
+👉 Docker Compose giúp định nghĩa và chạy nhiều container với file docker-compose.yml.
+
+📌 Tác dụng:
+✔ Thay vì chạy từng container bằng tay, có thể quản lý tất cả bằng một lệnh.
+✔ Dễ dàng cấu hình kết nối giữa nhiều container (MySQL, API, Frontend…).
+✔ Hỗ trợ môi trường phát triển, staging, production.
+
+📌 Mối quan hệ:
+✔ Docker Compose chạy trên Docker Engine để tạo nhiều container cùng lúc.
+✔ Có thể làm việc với Docker Hub để lấy image.
+✔ Kubernetes có thể thay thế Docker Compose khi cần quản lý container lớn hơn.
+
+☸ 5. Kubernetes (Quản lý & tự động hóa container)
+👉 Kubernetes (K8s) giúp điều phối và quản lý nhiều container chạy trên nhiều máy chủ khác nhau.
+
+📌 Tác dụng:
+✔ Tự động mở rộng (scaling) – Kubernetes tạo thêm container khi có nhiều tải.
+✔ Cân bằng tải (load balancing) – Phân phối request giữa các container.
+✔ Tự phục hồi (self-healing) – Nếu container lỗi, Kubernetes tự restart.
+✔ Quản lý dễ dàng – Hỗ trợ cập nhật ứng dụng mà không gián đoạn.
+
+📌 Mối quan hệ:
+✔ Kubernetes sử dụng Docker Engine để chạy container.
+✔ Có thể thay thế Docker Compose khi hệ thống lớn.
+✔ Lấy image từ Docker Hub để triển khai container.
+
+-- Tạo bằng docker build -t myimage .	
+-- Xem danh sách docker images
+-- Xóa bằng docker rmi myimage
+
+
+Container Là instance của image đang chạy
+Chứa dữ liệu runtime, logs, tệp tạm thời
+-- Tạo bằng docker run myimage
+-- Xem danh sách docker ps -a
+-- docker rm mycontainer
+
+Tạo File Dockerfile:
+# Sử dụng Node.js 14 làm base image
+FROM node:14  
+
+# Thiết lập thư mục làm việc trong container
+WORKDIR /app  
+
+# Copy file package.json vào container để cài đặt dependencies trước
+COPY package.json .  
+
+# Cài đặt dependencies
+RUN npm install  
+
+# Copy toàn bộ mã nguồn vào container
+COPY . .  
+
+# Khai báo container sẽ sử dụng cổng 3000
+EXPOSE 3000  
+
+# Chạy ứng dụng Node.js với file app.mjs
+CMD [ "node", "app.mjs"]
+
+-- Tạo 1 image từ Dockerfile
+docker build -t hung-docker .
+hoặc docker build . 
+"Dấu chấm ." Dùng dockerfile trong thư mục hiện tại để build image
+
+check tiếp docker images
+
+-- Tạo container từ image đã build
+docker run -d --name my-container my-app
+--- -d : Chạy container ở chế độ nền ( Detached)
+--- -name my-container : Đặt tên container là my-container
+--- my-app : Tạo container từ image my-app
+
+docker run -p 3000:3000 0a476a20c375 ( Dựa theo Image ID )
+--- -p : Chạy container ở chế độ hiển thị logs ( Attached)
+--- container đang đặt tên tự động
+-- Chạy từ imageID (0a476a20c375 )
+-- Map port : Có ( -p 3000:3000)→ Map port 3000 trên máy host với port 3000 của container.
+
+docker run -d --name hung-container-2 -p 3000:3000 hung-docker
+
+
+-- Logs: Hiển thị trực tiếp trên terminal
+docker logs (Tên hoặc ID container)
+
+
+
+Mở thêm 1 terminal tiếp : docker ps
+docker stop eager_chandrasekhar ( Dựa theo tên trên ps )
+
+Kiến thức 18/02
+Docker hỗ trợ ba chế độ chạy container chính: Interactive Mode, Detached Mode, và Attached Mode, mỗi chế độ phù hợp với các trường hợp sử dụng khác nhau.
+
+1. Interactive Mode (-it)
+📌 Dùng khi cần tương tác trực tiếp với container
+
+🔹 Trường hợp sử dụng:
+
+Debugging: Kiểm tra lỗi, log, kết nối mạng, và sửa lỗi trực tiếp.
+Phát triển & thử nghiệm: Thử nghiệm code trong môi trường container mà không cần khởi động lại.
+Cài đặt & cấu hình: Cài đặt phần mềm, thay đổi thiết lập ngay bên trong container.
+🔹 Ví dụ:
+docker run -it ubuntu bash
+➡ Mở terminal tương tác với container Ubuntu.
+
+
+2. Detached Mode (-d)
+📌 Dùng khi cần chạy container trong nền mà không giữ terminal mở
+
+🔹 Trường hợp sử dụng:
+
+Chạy ứng dụng sản xuất: Container chạy độc lập, không cần theo dõi đầu ra liên tục.
+Dịch vụ nền: Chạy database (MySQL, MongoDB, Redis) hoặc backend server.
+Quản lý nhiều container: Dùng với Docker Compose để khởi động nhiều container cùng lúc.
+🔹 Ví dụ:
+
+docker run -d -p 3000:3000 node-app
+➡ Chạy ứng dụng Node.js trong nền mà không chiếm terminal.
+
+3. Attached Mode (Mặc định)
+📌 Dùng khi muốn xem output của container mà không cần tương tác
+
+🔹 Trường hợp sử dụng:
+
+Theo dõi logs: Xem log của ứng dụng đang chạy mà không cần mở một phiên shell.
+Chạy container ngắn hạn: Kiểm tra đầu ra của một ứng dụng chạy nhanh rồi kết thúc.
+Phát triển ứng dụng: Quan sát lỗi hoặc thông báo của ứng dụng ngay khi khởi động.
+🔹 Ví dụ:
+
+docker run node-app
+➡ Container chạy và hiển thị logs trên terminal nhưng không cho phép nhập lệnh bên trong.
+
+Xóa container Docker
+-- docker ps -a ( tính cả container đã xóa hoặc dừng)
+-- docker ps ( container đang chạy)
+Xem log container
+-- docker logs ( Tên container )
+Dừng container trước khi Xóa
+-- docker stop ( Tên container hoặc ID container)
+-- docker start ( Tên container hoặc ID Container)
+-- docker rm ( Tên container hoặc ID container)
+
+Kiểm tra trạng thái container
+-- docker inspect hung-container-2
+
+Xóa images
+-- docker images
+-- docker image inspect ( Tên Image hoặc ImageID)  -- trả về thông tin chi tiết của image 
+-- docker rmi (Tên image hoặc ID image)
+
+Tóm lại:
+ ---- Dừng và xóa container sử dụng image trước khi xóa image.
+ ---- Hoặc sử dụng tùy chọn -f để xóa image ngay lập tức.
+ ------ docker rmi -f 8f51a7a83e4b (ID image)
+
+Tự động xóa các container đã dừng trong Docker
+Khi bạn khởi động một container, bạn có thể thêm flag --rm. 
+Flag này đảm bảo container sẽ tự động bị xóa khi nó dừng lại.
+-- docker run --rm <tên_image>
+-- docker run -d --name hung-container-2 -p 3000:3000 --rm hung-docker
+
+
+Naming and Tagging Containers & Images in Docker
+Trong Docker, đặt tên (naming) và gán thẻ (tagging) giúp quản lý container và image dễ dàng hơn.
+
+< Đặt tên cho Image >
+docker build -t myapp:v1 .
+------------------
+myapp là tên image.
+v1 là tag để phân biệt phiên bản.
+
+
+- Gán tag cho image đã có
+docker tag image_id myapp:v2
+
+-------------------
+Push image lên docker Hub với tag
+docker tag myapp:v1 username/myapp:v1
+docker push username/myapp:v1
+
+
+
+< Đặt tên cho Container >
+docker run --name my_container -d myapp:v1
+-d Chạy container ở chế độ nền
+
+- Đổi tên container sau khi chạy 
+docker rename old_container new_container
+
+- Kiểm tra danh sách container với tên
+docker ps --format "table {{.ID}}\t{{.Names}}\t{{.Image}}"
+
+- Đặt tên container và image phải có ý nghĩa
+
+
+- Sharing Docker Images - Overview
+Chia sẻ Docker Image giúp bạn phân phối ứng dụng dễ dàng giữa các máy tính, môi trường hoặc đồng nghiệp. 
+Dưới đây là tổng quan về các phương pháp chia sẻ Docker Image.
